@@ -8,20 +8,18 @@
 
 #include <mbed.h>
 
-class SimpleIR {
-public:
-
+class SimpleIR
+{
+  public:
     explicit SimpleIR(PinName rxpin, PinName txpin);
     ~SimpleIR();
 
     int receive(unsigned int *ir_data, size_t data_size);
     void transmit(unsigned int *ir_data, size_t data_size);
 
-private:
-
+  private:
     DigitalIn ir_in;
     PwmOut ir_out;
     Timer timer;
-
 };
 #endif

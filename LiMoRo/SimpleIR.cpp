@@ -5,19 +5,23 @@
 
 #include "SimpleIR.h"
 
-SimpleIR::SimpleIR(PinName rxpin, PinName txpin) : ir_in(rxpin), ir_out(txpin) {
+SimpleIR::SimpleIR(PinName rxpin, PinName txpin) : ir_in(rxpin), ir_out(txpin)
+{
 }
 
-SimpleIR::~SimpleIR() {
+SimpleIR::~SimpleIR()
+{
 }
 
-int SimpleIR::receive(unsigned int ir_data[], size_t data_size) {
+int SimpleIR::receive(unsigned int ir_data[], size_t data_size)
+{
     unsigned int i;
 
     timer.reset();
     timer.start();
 
-    for(i = 0; i < data_size; i++){
+    for (i = 0; i < data_size; i++)
+    {
         ir_data[i] = 0;
     }
 
@@ -25,18 +29,25 @@ int SimpleIR::receive(unsigned int ir_data[], size_t data_size) {
     int stat = 0;
 
     start_at = timer.read_us();
-    while(stat = ir_in){
-        if(timer.read_us() - start_at > 1000000) {
+    while (stat = ir_in)
+    {
+        if (timer.read_us() - start_at > 1000000)
+        {
             return -1;
         }
     }
 
     last = timer.read_us();
-    for(i = 0; i < data_size; i++){
-        while (1) {
-            if(stat != ir_in) break;
-            if(timer.read_us() - last > 100000) {
-                if (i < 10) {
+    for (i = 0; i < data_size; i++)
+    {
+        while (1)
+        {
+            if (stat != ir_in)
+                break;
+            if (timer.read_us() - last > 100000)
+            {
+                if (i < 10)
+                {
                     return -1;
                 }
                 return i;
@@ -46,20 +57,22 @@ int SimpleIR::receive(unsigned int ir_data[], size_t data_size) {
         now = timer.read_us();
         ir_data[i] = (now - last);
         last = now;
-        stat = ( 1 - stat );
+        stat = (1 - stat);
     }
 
     return -1;
 }
 
-void SimpleIR::transmit(unsigned int *ir_data, size_t data_size) {
+void SimpleIR::transmit(unsigned int *ir_data, size_t data_size)
+{
     unsigned int i;
 
-    ir_out.period_us( 26.5 );   // 38KHz = 1/38000[s] = 26.315 [us]
+    ir_out.period_us(26.5); // 38KHz = 1/38000[s] = 26.315 [us]
 
-    for(i = 0; i < data_size; i++ ) {
-        ir_out.write( 0.5 * ( 1 - (i % 2) ));
-        wait_us( ir_data[i] );
+    for (i = 0; i < data_size; i++)
+    {
+        ir_out.write(0.5 * (1 - (i % 2)));
+        wait_us(ir_data[i]);
     }
 
     ir_out.write(0);

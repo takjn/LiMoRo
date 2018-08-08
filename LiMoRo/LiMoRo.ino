@@ -8,7 +8,7 @@
 #include <Arduino.h>
 #include <Camera.h>
 #include <SdUsbConnect.h>
-#include <Servo.h>
+#include "Robot.h"
 #include "SimpleIR.h"
 #include "EasyPlayback.h"
 #include "EasyDec_WavCnv2ch.h"
@@ -47,33 +47,39 @@ unsigned int ir_data[] = {3479, 1621, 444, 340, 534, 1203, 446, 339, 505, 1233, 
 SimpleIR ir(D1, D0);
 
 #ifdef ENABLE_CLOUD_FUNCTION
-void setDateTimeFromNTP() {
+void setDateTimeFromNTP()
+{
     printf("Accessing NTP..");
     NTPClient ntp(&wifi);
     time_t tstamp = ntp.get_timestamp();
-    if(tstamp < 0){
+    if (tstamp < 0)
+    {
         printf("Cannot get time from NTP.");
         rtc.setDateTime(2018, 4, 19, 16, 40, 0);
     }
-    else {
+    else
+    {
         printf("done\r\n");
         struct tm tim = *localtime(&tstamp);
-        rtc.setDateTime(tim.tm_year+1900, tim.tm_mon+1, tim.tm_mday, tim.tm_hour, tim.tm_min, tim.tm_sec);
+        rtc.setDateTime(tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday, tim.tm_hour, tim.tm_min, tim.tm_sec);
     }
 }
 #endif
 
-void panic() {
+void panic()
+{
     // 異常終了した場合、LED1を高速で点滅する
     char led = 1;
-    while (1) {
+    while (1)
+    {
         digitalWrite(LED_RED, led);
         led = (1 - led);
         delay(100);
     }
 }
 
-void setup() {
+void setup()
+{
     Serial.begin(115200);
 
     pinMode(LED_YELLOW, OUTPUT);
@@ -98,7 +104,8 @@ void setup() {
     rtc.begin();
     printf("Connecting...\r\n");
     int ret = wifi.connect(WIFI_SSID, WIFI_PW, NSAPI_SECURITY_WPA_WPA2);
-    if (ret != 0) {
+    if (ret != 0)
+    {
         printf("Connection error\r\n");
         panic();
     }
@@ -114,17 +121,21 @@ void setup() {
 #endif
 
     // 赤外線リモコン信号の受信
-    if (sizeof(ir_data) > 1023) {
+    if (sizeof(ir_data) > 1023)
+    {
         int led = 0;
-        while(1) {
+        while (1)
+        {
             printf("IR signal waiting..\r\n");
             digitalWrite(LED_GREEN, led);
-            led = ( 1 - led );
+            led = (1 - led);
 
             int ret = ir.receive(ir_data, sizeof(ir_data) / sizeof(ir_data[0]));
-            if (ret > 0) {
-                for(int i = 0; i < ret; i++){
-                    printf( "%d, ", ir_data[i]);
+            if (ret > 0)
+            {
+                for (int i = 0; i < ret; i++)
+                {
+                    printf("%d, ", ir_data[i]);
                 }
                 printf("\r\n");
                 break;
@@ -139,7 +150,7 @@ void setup() {
     audio_player.add_decoder<EasyDec_WavCnv2ch>(".WAV");
 
     // volume control
-    audio_player.outputVolume(1.0);  // Volume control (min:0.0 max:1.0)
+    audio_player.outputVolume(1.0); // Volume control (min:0.0 max:1.0)
 
     // Camera
     camera.begin();
@@ -154,14 +165,18 @@ void setup() {
 
 uint32_t last_millis = 0;
 
-void take_photo() {
-    FILE * wp = fopen("/storage/lychee_camera.jpg", "w");
-    if (wp != NULL) {
+void take_photo()
+{
+    FILE *wp = fopen("/storage/lychee_camera.jpg", "w");
+    if (wp != NULL)
+    {
         size_t size = camera.createJpeg();
-        fwrite(camera.getJpegAdr(), sizeof(char), (int) size, wp);
+        fwrite(camera.getJpegAdr(), sizeof(char), (int)size, wp);
         fclose(wp);
         audio_player.play("/storage/camera-shutter2.wav");
-    } else {
+    }
+    else
+    {
         Serial.print("Not found jpg");
         digitalWrite(LED_RED, HIGH);
         delay(1);
@@ -169,33 +184,46 @@ void take_photo() {
     Serial.println("done to take a photo");
 }
 
-void loop() {
+void loop()
+{
 
 #ifdef ENABLE_CLOUD_FUNCTION
     //  Check command
-    if (millis() - last_millis > 1000) {
+    if (millis() - last_millis > 1000)
+    {
         string ret = firebase.get_command();
-        if (ret == "ERROR") {
+        if (ret == "ERROR")
+        {
             delay(5000);
-        } else if (ret == "ON") {
+        }
+        else if (ret == "ON")
+        {
             digitalWrite(PIN_LIGHT, HIGH);
-        } else if (ret == "OFF"){
+        }
+        else if (ret == "OFF")
+        {
             digitalWrite(PIN_LIGHT, LOW);
-        } else if (ret == "PHOTO") {
+        }
+        else if (ret == "PHOTO")
+        {
             digitalWrite(LED_GREEN, HIGH);
             take_photo();
             size_t size = camera.createJpeg();
             int ret = firebase.post_photo(camera.getJpegAdr(), size);
-            if (ret == 0) {
+            if (ret == 0)
+            {
                 // const char message[] = "写真を撮りました";
                 // firebase.post_message(message, strlen(message));
             }
-            else {
+            else
+            {
                 const char message[] = "通信に失敗しました";
                 firebase.post_message(message, strlen(message));
             }
             digitalWrite(LED_GREEN, LOW);
-        } else if (ret == "TV") {
+        }
+        else if (ret == "TV")
+        {
             ir.transmit(ir_data, sizeof(ir_data) / sizeof(ir_data[0]));
             // const char message[] = "テレビをつけました";
             // firebase.post_message(message, strlen(message));
@@ -206,31 +234,34 @@ void loop() {
 #endif
 
     //  Camera
-    if(digitalRead(USER_BUTTON0) == LOW){
+    if (digitalRead(USER_BUTTON0) == LOW)
+    {
         digitalWrite(LED_GREEN, HIGH);
         take_photo();
 #ifdef ENABLE_CLOUD_FUNCTION
         size_t size = camera.createJpeg();
         firebase.post_photo(camera.getJpegAdr(), size);
 #endif
-        while(digitalRead(USER_BUTTON0) == LOW);
+        while (digitalRead(USER_BUTTON0) == LOW)
+            ;
         digitalWrite(LED_GREEN, LOW);
     }
 
     //  Servo
-    if(digitalRead(USER_BUTTON1) == LOW){
+    if (digitalRead(USER_BUTTON1) == LOW)
+    {
         g_servo0_pos = g_servo0_pos + g_servo0_inc;
         g_servo1_pos = g_servo1_pos + g_servo1_inc;
         servo0.write(g_servo0_pos);
         servo1.write(g_servo1_pos);
-        if(g_servo0_pos == 170 || g_servo0_pos == 10){
+        if (g_servo0_pos == 170 || g_servo0_pos == 10)
+        {
             g_servo0_inc = g_servo0_inc * -1;
         }
-        if(g_servo1_pos == 170 || g_servo1_pos == 10){
+        if (g_servo1_pos == 170 || g_servo1_pos == 10)
+        {
             g_servo1_inc = g_servo1_inc * -1;
         }
         delay(INTERVAL);
     }
-
 }
-
