@@ -1,4 +1,3 @@
-// #define ENABLE_AUDIO_FUNCTION
 // #define ENABLE_CLOUD_FUNCTION
 #define WIFI_SSID "xxxx"
 #define WIFI_PW "yyyy"
@@ -11,6 +10,9 @@
 #include <SdUsbConnect.h>
 #include <Servo.h>
 #include "SimpleIR.h"
+#include "EasyPlayback.h"
+#include "EasyDec_WavCnv2ch.h"
+static EasyPlayback audio_player;
 
 #ifdef ENABLE_CLOUD_FUNCTION
 #include <ESP32Interface.h>
@@ -21,12 +23,6 @@
 ESP32Interface wifi;
 RTC rtc;
 Firebase firebase(&wifi, SERVER_URL_COMMAND, SERVER_URL_PHOTO, SERVER_URL_MESSAGE);
-#endif
-
-#ifdef ENABLE_AUDIO_FUNCTION
-#include "EasyPlayback.h"
-#include "EasyDec_WavCnv2ch.h"
-static EasyPlayback audio_player;
 #endif
 
 #define PIN_SERVO0 9
@@ -137,7 +133,6 @@ void setup() {
         digitalWrite(LED_GREEN, LOW);
     }
 
-#ifdef ENABLE_AUDIO_FUNCTION
     // Audio Player
     // decoder setting
     audio_player.add_decoder<EasyDec_WavCnv2ch>(".wav");
@@ -145,7 +140,6 @@ void setup() {
 
     // volume control
     audio_player.outputVolume(1.0);  // Volume control (min:0.0 max:1.0)
-#endif
 
     // Camera
     camera.begin();
@@ -166,11 +160,7 @@ void take_photo() {
         size_t size = camera.createJpeg();
         fwrite(camera.getJpegAdr(), sizeof(char), (int) size, wp);
         fclose(wp);
-
-#ifdef ENABLE_AUDIO_FUNCTION
         audio_player.play("/storage/camera-shutter2.wav");
-#endif
-
     } else {
         Serial.print("Not found jpg");
         digitalWrite(LED_RED, HIGH);
