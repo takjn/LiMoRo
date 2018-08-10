@@ -11,7 +11,7 @@
 class SimpleIR
 {
 public:
-  explicit SimpleIR(PinName rxpin, PinName txpin);
+  SimpleIR(PinName rxpin, PinName txpin);
   ~SimpleIR();
 
   int receive(unsigned int *ir_data, size_t data_size);

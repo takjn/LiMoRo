@@ -16,8 +16,7 @@ static EasyPlayback audio_player;
 
 #ifdef ENABLE_CLOUD_FUNCTION
 #include <ESP32Interface.h>
-#include <NTPClient.h>
-#include <RTC.h>
+#include <NTPUtility.h>
 #include "Firebase.h"
 
 ESP32Interface wifi;
@@ -25,46 +24,17 @@ RTC rtc;
 Firebase firebase(&wifi, SERVER_URL_COMMAND, SERVER_URL_PHOTO, SERVER_URL_MESSAGE);
 #endif
 
-#define PIN_SERVO0 9
-#define PIN_SERVO1 10
-#define PIN_LIGHT 13
-
-#define INTERVAL 200
-
+// Camera & storage
 Camera camera(320, 240);
 SdUsbConnect storage("storage");
 
-char g_servo0_inc = 10;
-char g_servo1_inc = -10;
-unsigned char g_servo0_pos = 90;
-unsigned char g_servo1_pos = 90;
-Servo servo0;
-Servo servo1;
-
+// IR remote control
 // unsigned int ir_data[1024];
 unsigned int ir_data[] = {3479, 1621, 444, 340, 534, 1203, 446, 339, 505, 1233, 446, 339, 506, 1231, 445, 341, 503, 1234, 444, 342, 532, 1205, 442, 339, 508, 1233, 443, 1211, 506, 361, 444, 1186, 502, 391, 444, 1192, 490, 1179, 535, 1204, 445, 1181, 506, 391, 481, 303, 506, 333, 507, 1177, 533, 306, 505, 1190, 520, 307, 508, 390, 446, 1177, 507, 393, 443, 397, 448, 335, 505, 395, 444, 1180, 504, 1180, 498, 341, 505, 1185, 492, 338, 536, 315, 492, 396, 444, 1187, 494, 398, 444, 338, 509, 341, 494, 1177, 537, 308, 508, 1170, 510, 1231, 443, 70082, 3477, 1568, 536, 310, 503, 1173, 507, 347, 487, 1180, 507, 345, 492, 1178, 508, 341, 499, 1175, 507, 340, 496, 1178, 508, 342, 499, 1175, 535, 1203, 444, 338, 509, 1232, 444, 338, 509, 1232, 444, 1186, 531, 1147, 503, 1234, 442, 345, 502, 338, 534, 361, 443, 1180, 537, 361, 444, 1180, 507, 392, 443, 343, 532, 1204, 444, 349, 496, 336, 536, 363, 481, 305, 500, 1235, 444, 1180, 537, 361, 443, 1180, 537, 315, 492, 348, 492, 340, 534, 1205, 444, 338, 509, 345, 495, 392, 444, 1211, 468, 399, 442, 1188, 495, 1181, 533};
-
 SimpleIR ir(D1, D0);
 
-#ifdef ENABLE_CLOUD_FUNCTION
-void setDateTimeFromNTP()
-{
-    printf("Accessing NTP..");
-    NTPClient ntp(&wifi);
-    time_t tstamp = ntp.get_timestamp();
-    if (tstamp < 0)
-    {
-        printf("Cannot get time from NTP.");
-        rtc.setDateTime(2018, 4, 19, 16, 40, 0);
-    }
-    else
-    {
-        printf("done\r\n");
-        struct tm tim = *localtime(&tstamp);
-        rtc.setDateTime(tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday, tim.tm_hour, tim.tm_min, tim.tm_sec);
-    }
-}
-#endif
+// Body
+Robot body(A0, D3, D4, D5, D6);
 
 void panic()
 {
@@ -88,16 +58,6 @@ void setup()
     pinMode(LED_GREEN, OUTPUT);
     pinMode(USER_BUTTON0, INPUT);
     pinMode(USER_BUTTON1, INPUT);
-
-    pinMode(PIN_SERVO0, OUTPUT);
-    pinMode(PIN_SERVO1, OUTPUT);
-    pinMode(PIN_LIGHT, OUTPUT);
-
-    // Servo
-    servo0.attach(PIN_SERVO0);
-    servo1.attach(PIN_SERVO1);
-    servo0.write(g_servo0_pos);
-    servo1.write(g_servo1_pos);
 
 #ifdef ENABLE_CLOUD_FUNCTION
     // WiFi
@@ -196,14 +156,6 @@ void loop()
         {
             delay(5000);
         }
-        else if (ret == "ON")
-        {
-            digitalWrite(PIN_LIGHT, HIGH);
-        }
-        else if (ret == "OFF")
-        {
-            digitalWrite(PIN_LIGHT, LOW);
-        }
         else if (ret == "PHOTO")
         {
             digitalWrite(LED_GREEN, HIGH);
@@ -245,23 +197,5 @@ void loop()
         while (digitalRead(USER_BUTTON0) == LOW)
             ;
         digitalWrite(LED_GREEN, LOW);
-    }
-
-    //  Servo
-    if (digitalRead(USER_BUTTON1) == LOW)
-    {
-        g_servo0_pos = g_servo0_pos + g_servo0_inc;
-        g_servo1_pos = g_servo1_pos + g_servo1_inc;
-        servo0.write(g_servo0_pos);
-        servo1.write(g_servo1_pos);
-        if (g_servo0_pos == 170 || g_servo0_pos == 10)
-        {
-            g_servo0_inc = g_servo0_inc * -1;
-        }
-        if (g_servo1_pos == 170 || g_servo1_pos == 10)
-        {
-            g_servo1_inc = g_servo1_inc * -1;
-        }
-        delay(INTERVAL);
     }
 }

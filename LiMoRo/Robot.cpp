@@ -103,11 +103,9 @@ void Robot::walkForwards4()
 //  This is the Walking Backwards Sub Routine.
 void Robot::walkBackwards()
 {
-
-Move1:
+    // Ankle goto 23deg
     walkForwards1();
 
-Move2:
     // Hip goto 25deg
     while (leftHipPosition < MAX_HIP_ANGLE)
     {
@@ -119,10 +117,9 @@ Move2:
     }
     delay(STEP_DELAY);
 
-Move3:
+    // ANKLE goto -23deg
     walkForwards3();
 
-Move4:
     // Hip goto -25deg
     while (leftHipPosition > -MAX_HIP_ANGLE)
     {

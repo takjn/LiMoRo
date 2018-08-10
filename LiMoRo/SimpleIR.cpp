@@ -40,7 +40,7 @@ int SimpleIR::receive(unsigned int ir_data[], size_t data_size)
     last = timer.read_us();
     for (i = 0; i < data_size; i++)
     {
-        while (1)
+        while (true)
         {
             if (stat != ir_in)
                 break;
