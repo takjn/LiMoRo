@@ -5,8 +5,11 @@
 
 #include "Robot.h"
 
-Robot::Robot(PinName leftHip, PinName rightHip, PinName leftAnkle, PinName rightAnkle)
+Robot::Robot(PinName sonar, PinName leftHip, PinName rightHip, PinName leftAnkle, PinName rightAnkle)
 {
+    // attach the sonar
+    pinSonar = sonar;
+
     // attach the servo
     servoLeftHip.attach(leftHip);
     servoRightHip.attach(rightHip);
@@ -28,10 +31,10 @@ void Robot::stop()
     servoLeftHip.write(LEFT_ANKLE_CENTER);
     servoRightHip.write(RIGHT_ANKLE_CENTER);
 
-    LAP = 0;
-    RAP = 0;
-    LHP = 0;
-    RHP = 0;
+    leftAnklePosition = 0;
+    rightAnklePosition = 0;
+    leftHipPosition = 0;
+    rightHipPosition = 0;
 
     delay(STEP_DELAY);
 }
@@ -40,12 +43,12 @@ void Robot::stop()
 void Robot::walkForwards1()
 {
     // Ankle goto 23deg
-    while (LAP < MAX_ANCLE_ANGLE)
+    while (leftAnklePosition < MAX_ANKLE_ANGLE)
     {
-        LAP = LAP + 1;
-        RAP = RAP + 1;
-        servoLeftAnkle.write(LEFT_ANKLE_CENTER - LAP);
-        servoRightAnkle.write(RIGHT_ANKLE_CENTER - RAP);
+        leftAnklePosition = leftAnklePosition + 1;
+        rightAnklePosition = rightAnklePosition + 1;
+        servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
+        servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
         delay(ANGLE_DELAY);
     }
 
@@ -55,12 +58,12 @@ void Robot::walkForwards1()
 void Robot::walkForwards2()
 {
     // Hip goto 25deg
-    while (LHP < MAX_HIP_ANGLE)
+    while (leftHipPosition < MAX_HIP_ANGLE)
     {
-        LHP = LHP + 1;
-        RHP = RHP + 1;
-        servoLeftHip.write(LEFT_HIP_CENTER + LHP);
-        servoRightHip.write(RIGHT_HIP_CENTER + RHP);
+        leftHipPosition = leftHipPosition + 1;
+        rightHipPosition = rightHipPosition + 1;
+        servoLeftHip.write(LEFT_HIP_CENTER + leftHipPosition);
+        servoRightHip.write(RIGHT_HIP_CENTER + rightHipPosition);
         delay(ANGLE_DELAY);
     }
 
@@ -69,13 +72,13 @@ void Robot::walkForwards2()
 
 void Robot::walkForwards3()
 {
-    // Ancle goto -23deg
-    while (LAP > -MAX_ANCLE_ANGLE)
+    // ANKLE goto -23deg
+    while (leftAnklePosition > -MAX_ANKLE_ANGLE)
     {
-        LAP = LAP - 1;
-        RAP = RAP - 1;
-        servoLeftAnkle.write(LEFT_ANKLE_CENTER - LAP);
-        servoRightAnkle.write(RIGHT_ANKLE_CENTER - RAP);
+        leftAnklePosition = leftAnklePosition - 1;
+        rightAnklePosition = rightAnklePosition - 1;
+        servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
+        servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
         delay(ANGLE_DELAY);
     }
 
@@ -85,12 +88,12 @@ void Robot::walkForwards3()
 void Robot::walkForwards4()
 {
     // Hip goto -25deg
-    while (LHP > -MAX_HIP_ANGLE)
+    while (leftHipPosition > -MAX_HIP_ANGLE)
     {
-        LHP = LHP - 1;
-        RHP = RHP - 1;
-        servoLeftHip.write(LEFT_HIP_CENTER + LHP);
-        servoRightHip.write(RIGHT_HIP_CENTER + RHP);
+        leftHipPosition = leftHipPosition - 1;
+        rightHipPosition = rightHipPosition - 1;
+        servoLeftHip.write(LEFT_HIP_CENTER + leftHipPosition);
+        servoRightHip.write(RIGHT_HIP_CENTER + rightHipPosition);
         delay(ANGLE_DELAY);
     }
 
@@ -106,12 +109,12 @@ Move1:
 
 Move2:
     // Hip goto 25deg
-    while (LHP < MAX_HIP_ANGLE)
+    while (leftHipPosition < MAX_HIP_ANGLE)
     {
-        LHP = LHP + 1;
-        RHP = RHP + 1;
-        servoLeftHip.write(LEFT_HIP_CENTER - LHP);
-        servoRightHip.write(RIGHT_HIP_CENTER - RHP);
+        leftHipPosition = leftHipPosition + 1;
+        rightHipPosition = rightHipPosition + 1;
+        servoLeftHip.write(LEFT_HIP_CENTER - leftHipPosition);
+        servoRightHip.write(RIGHT_HIP_CENTER - rightHipPosition);
         delay(ANGLE_DELAY);
     }
     delay(STEP_DELAY);
@@ -121,12 +124,12 @@ Move3:
 
 Move4:
     // Hip goto -25deg
-    while (LHP > -MAX_HIP_ANGLE)
+    while (leftHipPosition > -MAX_HIP_ANGLE)
     {
-        LHP = LHP - 1;
-        RHP = RHP - 1;
-        servoLeftHip.write(LEFT_HIP_CENTER - LHP);
-        servoRightHip.write(RIGHT_HIP_CENTER - RHP);
+        leftHipPosition = leftHipPosition - 1;
+        rightHipPosition = rightHipPosition - 1;
+        servoLeftHip.write(LEFT_HIP_CENTER - leftHipPosition);
+        servoRightHip.write(RIGHT_HIP_CENTER - rightHipPosition);
         delay(ANGLE_DELAY);
     }
     delay(STEP_DELAY);
@@ -136,16 +139,16 @@ Move4:
 void Robot::turnRight()
 {
 Move1:
-    LAP = LAP + 1;
-    RAP = RAP + 1;
-    servoLeftAnkle.write(LEFT_ANKLE_CENTER + LAP);
-    servoRightAnkle.write(RIGHT_ANKLE_CENTER + RAP);
+    leftAnklePosition = leftAnklePosition + 1;
+    rightAnklePosition = rightAnklePosition + 1;
+    servoLeftAnkle.write(LEFT_ANKLE_CENTER + leftAnklePosition);
+    servoRightAnkle.write(RIGHT_ANKLE_CENTER + rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (LAP < 23)
+    if (leftAnklePosition < 23)
     {
         goto Move1;
     } //Left Ankle goto 23deg
-    if (RAP < 23)
+    if (rightAnklePosition < 23)
     {
         goto Move1;
     } //Right Ankle goto 23deg
@@ -153,10 +156,10 @@ Move1:
     delay(STEP_DELAY);
 
 Move2:
-    RHP = RHP + 1;
-    servoRightHip.write(RIGHT_HIP_CENTER - RHP);
+    rightHipPosition = rightHipPosition + 1;
+    servoRightHip.write(RIGHT_HIP_CENTER - rightHipPosition);
     delay(ANGLE_DELAY);
-    if (RHP < 30)
+    if (rightHipPosition < 30)
     {
         goto Move2;
     } //Right Hipe goto 25deg
@@ -164,16 +167,16 @@ Move2:
     delay(STEP_DELAY);
 
 Move3:
-    LAP = LAP - 1;
-    RAP = RAP - 1;
-    servoLeftAnkle.write(LEFT_ANKLE_CENTER + LAP);
-    servoRightAnkle.write(RIGHT_ANKLE_CENTER + RAP);
+    leftAnklePosition = leftAnklePosition - 1;
+    rightAnklePosition = rightAnklePosition - 1;
+    servoLeftAnkle.write(LEFT_ANKLE_CENTER + leftAnklePosition);
+    servoRightAnkle.write(RIGHT_ANKLE_CENTER + rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (LAP > -23)
+    if (leftAnklePosition > -23)
     {
         goto Move3;
     } //Left Ankle goto 23degrees
-    if (RAP > -23)
+    if (rightAnklePosition > -23)
     {
         goto Move3;
     } //Right Ankle goto 23degrees
@@ -181,10 +184,10 @@ Move3:
     delay(STEP_DELAY);
 
 Move4:
-    LHP = LHP - 1;
-    servoLeftHip.write(LEFT_HIP_CENTER + LHP);
+    leftHipPosition = leftHipPosition - 1;
+    servoLeftHip.write(LEFT_HIP_CENTER + leftHipPosition);
     delay(ANGLE_DELAY);
-    if (LHP > -25)
+    if (leftHipPosition > -25)
     {
         goto Move4;
     } //Left Hip goto -25deg
@@ -192,10 +195,10 @@ Move4:
     delay(STEP_DELAY);
 
 Move5:
-    RHP = RHP - 1;
-    servoRightHip.write(RIGHT_HIP_CENTER - RHP);
+    rightHipPosition = rightHipPosition - 1;
+    servoRightHip.write(RIGHT_HIP_CENTER - rightHipPosition);
     delay(ANGLE_DELAY);
-    if (RHP > 0)
+    if (rightHipPosition > 0)
     {
         goto Move5;
     } //Right Hipe goto 25deg
@@ -203,16 +206,16 @@ Move5:
     delay(STEP_DELAY);
 
 Move6:
-    LAP = LAP + 1;
-    RAP = RAP + 1;
-    servoLeftAnkle.write(LEFT_ANKLE_CENTER + LAP);
-    servoRightAnkle.write(RIGHT_ANKLE_CENTER + RAP);
+    leftAnklePosition = leftAnklePosition + 1;
+    rightAnklePosition = rightAnklePosition + 1;
+    servoLeftAnkle.write(LEFT_ANKLE_CENTER + leftAnklePosition);
+    servoRightAnkle.write(RIGHT_ANKLE_CENTER + rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (LAP < +23)
+    if (leftAnklePosition < +23)
     {
         goto Move6;
     } //Left Ankle goto 23degrees
-    if (RAP < +23)
+    if (rightAnklePosition < +23)
     {
         goto Move6;
     } //Right Ankle goto 23degrees
@@ -220,10 +223,10 @@ Move6:
     delay(STEP_DELAY);
 
 Move7:
-    LHP = LHP + 1;
-    servoLeftHip.write(LEFT_HIP_CENTER + LHP);
+    leftHipPosition = leftHipPosition + 1;
+    servoLeftHip.write(LEFT_HIP_CENTER + leftHipPosition);
     delay(ANGLE_DELAY);
-    if (LHP < 0)
+    if (leftHipPosition < 0)
     {
         goto Move7;
     } //Left Hip goto -25deg
@@ -231,16 +234,16 @@ Move7:
     delay(STEP_DELAY);
 
 Move8:
-    LAP = LAP - 1;
-    RAP = RAP - 1;
-    servoLeftAnkle.write(LEFT_ANKLE_CENTER + LAP);
-    servoRightAnkle.write(RIGHT_ANKLE_CENTER + RAP);
+    leftAnklePosition = leftAnklePosition - 1;
+    rightAnklePosition = rightAnklePosition - 1;
+    servoLeftAnkle.write(LEFT_ANKLE_CENTER + leftAnklePosition);
+    servoRightAnkle.write(RIGHT_ANKLE_CENTER + rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (LAP > 0)
+    if (leftAnklePosition > 0)
     {
         goto Move8;
     } //Left Ankle goto 23degrees
-    if (RAP > 0)
+    if (rightAnklePosition > 0)
     {
         goto Move8;
     } //Right Ankle goto 23degrees
@@ -252,16 +255,16 @@ Move8:
 void Robot::turnLeft()
 {
 Move1:
-    LAP = LAP + 1;
-    RAP = RAP + 1;
-    servoLeftAnkle.write(LEFT_ANKLE_CENTER - LAP);
-    servoRightAnkle.write(RIGHT_ANKLE_CENTER - RAP);
+    leftAnklePosition = leftAnklePosition + 1;
+    rightAnklePosition = rightAnklePosition + 1;
+    servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
+    servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (LAP < 23)
+    if (leftAnklePosition < 23)
     {
         goto Move1;
     } //Left Ankle goto 23deg
-    if (RAP < 23)
+    if (rightAnklePosition < 23)
     {
         goto Move1;
     } //Right Ankle goto 23deg
@@ -269,10 +272,10 @@ Move1:
     delay(STEP_DELAY);
 
 Move2:
-    LHP = LHP + 1;
-    servoLeftHip.write(LEFT_HIP_CENTER + LHP);
+    leftHipPosition = leftHipPosition + 1;
+    servoLeftHip.write(LEFT_HIP_CENTER + leftHipPosition);
     delay(ANGLE_DELAY);
-    if (LHP < 30)
+    if (leftHipPosition < 30)
     {
         goto Move2;
     }
@@ -280,16 +283,16 @@ Move2:
     delay(STEP_DELAY);
 
 Move3:
-    LAP = LAP - 1;
-    RAP = RAP - 1;
-    servoLeftAnkle.write(LEFT_ANKLE_CENTER - LAP);
-    servoRightAnkle.write(RIGHT_ANKLE_CENTER - RAP);
+    leftAnklePosition = leftAnklePosition - 1;
+    rightAnklePosition = rightAnklePosition - 1;
+    servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
+    servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (LAP > -23)
+    if (leftAnklePosition > -23)
     {
         goto Move3;
     } //Left Ankle goto 23degrees
-    if (RAP > -23)
+    if (rightAnklePosition > -23)
     {
         goto Move3;
     } //Right Ankle goto 23degrees
@@ -297,10 +300,10 @@ Move3:
     delay(STEP_DELAY);
 
 Move4:
-    RHP = RHP - 1;
-    servoRightHip.write(RIGHT_HIP_CENTER - RHP);
+    rightHipPosition = rightHipPosition - 1;
+    servoRightHip.write(RIGHT_HIP_CENTER - rightHipPosition);
     delay(ANGLE_DELAY);
-    if (RHP > -25)
+    if (rightHipPosition > -25)
     {
         goto Move4;
     }
@@ -308,10 +311,10 @@ Move4:
     delay(STEP_DELAY);
 
 Move5:
-    LHP = LHP - 1;
-    servoLeftHip.write(LEFT_HIP_CENTER + LHP);
+    leftHipPosition = leftHipPosition - 1;
+    servoLeftHip.write(LEFT_HIP_CENTER + leftHipPosition);
     delay(ANGLE_DELAY);
-    if (LHP > 0)
+    if (leftHipPosition > 0)
     {
         goto Move5;
     }
@@ -319,16 +322,16 @@ Move5:
     delay(STEP_DELAY);
 
 Move6:
-    LAP = LAP + 1;
-    RAP = RAP + 1;
-    servoLeftAnkle.write(LEFT_ANKLE_CENTER - LAP);
-    servoRightAnkle.write(RIGHT_ANKLE_CENTER - RAP);
+    leftAnklePosition = leftAnklePosition + 1;
+    rightAnklePosition = rightAnklePosition + 1;
+    servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
+    servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (LAP < +23)
+    if (leftAnklePosition < +23)
     {
         goto Move6;
     } //Left Ankle goto 23degrees
-    if (RAP < +23)
+    if (rightAnklePosition < +23)
     {
         goto Move6;
     } //Right Ankle goto 23degrees
@@ -336,10 +339,10 @@ Move6:
     delay(STEP_DELAY);
 
 Move7:
-    RHP = RHP + 1;
-    servoRightHip.write(RIGHT_HIP_CENTER - RHP);
+    rightHipPosition = rightHipPosition + 1;
+    servoRightHip.write(RIGHT_HIP_CENTER - rightHipPosition);
     delay(ANGLE_DELAY);
-    if (RHP < 0)
+    if (rightHipPosition < 0)
     {
         goto Move7;
     } //Left Hip goto -25deg
@@ -347,19 +350,82 @@ Move7:
     delay(STEP_DELAY);
 
 Move8:
-    LAP = LAP - 1;
-    RAP = RAP - 1;
-    servoLeftAnkle.write(LEFT_ANKLE_CENTER - LAP);
-    servoRightAnkle.write(RIGHT_ANKLE_CENTER - RAP);
+    leftAnklePosition = leftAnklePosition - 1;
+    rightAnklePosition = rightAnklePosition - 1;
+    servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
+    servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (LAP > 0)
+    if (leftAnklePosition > 0)
     {
         goto Move8;
     } //Left Ankle goto 23degrees
-    if (RAP > 0)
+    if (rightAnklePosition > 0)
     {
         goto Move8;
     } //Right Ankle goto 23degrees
 
     delay(STEP_DELAY);
+}
+
+double Robot::sonar()
+{
+    double ans;
+    int i;
+    ans = 0;
+    for (i = 0; i < 100; i++)
+    {
+        ans = ans + analogRead(pinSonar);
+    }
+    return 19501.14 * pow(ans / 100, -1.256676);
+}
+
+void Robot::ping()
+{
+    while (true)
+    {
+        if (sonar() > 10)
+        {
+            break;
+        }
+
+        stop();
+        walkBackwards();
+
+        if (sonar() < 6)
+        {
+            continue;
+        }
+
+        stop();
+        turnRight(); //by about 90degrees
+
+        if (sonar() > 10)
+        {
+            break;
+        }
+
+        stop();
+        turnLeft(); //by about 90degrees
+        turnLeft(); //by about 90degrees
+
+        if (sonar() > 10)
+        {
+            break;
+        }
+    }
+}
+
+void Robot::demoWalk()
+{
+    while (true)
+    {
+        ping();
+        walkForwards1();
+        ping();
+        walkForwards2();
+        ping();
+        walkForwards3();
+        ping();
+        walkForwards4();
+    }
 }
