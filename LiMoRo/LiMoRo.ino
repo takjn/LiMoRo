@@ -16,7 +16,7 @@ static EasyPlayback audio_player;
 
 #ifdef ENABLE_CLOUD_FUNCTION
 #include <ESP32Interface.h>
-#include "NTPUtility.h"
+#include "WiFiUtility.h"
 #include "Firebase.h"
 
 ESP32Interface wifi;
@@ -35,18 +35,6 @@ SimpleIR ir(D1, D0);
 // Body
 Robot body(A0, D4, D5, D6, D7, D8, D9, D10, D11);
 
-void panic()
-{
-    // 異常終了した場合、LED1を高速で点滅する
-    char led = 1;
-    while (1)
-    {
-        digitalWrite(LED_RED, led);
-        led = (1 - led);
-        delay(100);
-    }
-}
-
 void setup()
 {
     Serial.begin(115200);
@@ -60,23 +48,7 @@ void setup()
 
 #ifdef ENABLE_CLOUD_FUNCTION
     // WiFi
-    rtc.begin();
-    printf("Connecting...\r\n");
-    int ret = wifi.connect(WIFI_SSID, WIFI_PW, NSAPI_SECURITY_WPA_WPA2);
-    if (ret != 0)
-    {
-        printf("Connection error\r\n");
-        panic();
-    }
-    printf("Success\r\n\r\n");
-    printf("MAC: %s\r\n", wifi.get_mac_address());
-    printf("IP: %s\r\n", wifi.get_ip_address());
-    printf("Netmask: %s\r\n", wifi.get_netmask());
-    printf("Gateway: %s\r\n", wifi.get_gateway());
-    printf("RSSI: %d\r\n\r\n", wifi.get_rssi());
-
-    // NTP
-    setDateTimeFromNTP();
+    wifiSetup();
 #endif
 
     // 赤外線リモコン信号の受信
