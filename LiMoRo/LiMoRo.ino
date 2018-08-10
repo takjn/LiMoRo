@@ -16,11 +16,10 @@ static EasyPlayback audio_player;
 
 #ifdef ENABLE_CLOUD_FUNCTION
 #include <ESP32Interface.h>
-#include <NTPUtility.h>
+#include "NTPUtility.h"
 #include "Firebase.h"
 
 ESP32Interface wifi;
-RTC rtc;
 Firebase firebase(&wifi, SERVER_URL_COMMAND, SERVER_URL_PHOTO, SERVER_URL_MESSAGE);
 #endif
 
@@ -34,7 +33,7 @@ unsigned int ir_data[] = {3479, 1621, 444, 340, 534, 1203, 446, 339, 505, 1233, 
 SimpleIR ir(D1, D0);
 
 // Body
-Robot body(A0, D3, D4, D5, D6);
+Robot body(A0, D4, D5, D6, D7, D8, D9, D10, D11);
 
 void panic()
 {

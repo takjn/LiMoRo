@@ -12,7 +12,7 @@
 class Robot
 {
 public:
-  Robot(PinName sonar, PinName leftHip, PinName rightHip, PinName leftAnkle, PinName rightAnkle);
+  Robot(PinName sonar, PinName head, PinName neck, PinName leftArm, PinName rightArm, PinName leftHip, PinName rightHip, PinName leftAnkle, PinName rightAnkle);
   ~Robot();
 
   void stop();
@@ -39,11 +39,19 @@ private:
   const int RIGHT_HIP_CENTER = 97;
   const int LEFT_ANKLE_CENTER = 90;
   const int RIGHT_ANKLE_CENTER = 85;
+  const int HEAD_CENTER = 90;
+  const int NECK_CENTER = 90;
+  const int LEFT_ARM_CENTER = 90;
+  const int RIGHT_ARM_CENTER = 90;
 
   Servo servoLeftHip;
   Servo servoRightHip;
   Servo servoLeftAnkle;
   Servo servoRightAnkle;
+  Servo servoHead;
+  Servo servoNeck;
+  Servo servoLeftArm;
+  Servo servoRightArm;
 
   PinName pinSonar;
 

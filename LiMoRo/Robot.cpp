@@ -5,12 +5,16 @@
 
 #include "Robot.h"
 
-Robot::Robot(PinName sonar, PinName leftHip, PinName rightHip, PinName leftAnkle, PinName rightAnkle)
+Robot::Robot(PinName sonar, PinName head, PinName neck, PinName leftArm, PinName rightArm, PinName leftHip, PinName rightHip, PinName leftAnkle, PinName rightAnkle)
 {
     // attach the sonar
     pinSonar = sonar;
 
     // attach the servo
+    servoHead.attach(head);
+    servoNeck.attach(neck);
+    servoLeftArm.attach(leftArm);
+    servoLeftArm.attach(rightArm);
     servoLeftHip.attach(leftHip);
     servoRightHip.attach(rightHip);
     servoLeftAnkle.attach(leftAnkle);
@@ -26,6 +30,10 @@ Robot::~Robot()
 
 void Robot::stop()
 {
+    servoHead.write(NECK_CENTER);
+    servoNeck.write(NECK_CENTER);
+    servoLeftArm.write(LEFT_ARM_CENTER);
+    servoRightArm.write(RIGHT_ARM_CENTER);
     servoLeftAnkle.write(LEFT_HIP_CENTER);
     servoRightAnkle.write(RIGHT_HIP_CENTER);
     servoLeftHip.write(LEFT_ANKLE_CENTER);

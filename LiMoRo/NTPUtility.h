@@ -4,6 +4,9 @@
 #include <NTPClient.h>
 #include <RTC.h>
 
+extern ESP32Interface wifi;
+RTC rtc;
+
 void setDateTimeFromNTP()
 {
     printf("Accessing NTP..");
