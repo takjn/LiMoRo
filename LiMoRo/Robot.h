@@ -36,9 +36,9 @@ private:
 
   //  Enter actual servo alingment values here
   const int LEFT_HIP_CENTER = 90;
-  const int RIGHT_HIP_CENTER = 97;
+  const int RIGHT_HIP_CENTER = 90;
   const int LEFT_ANKLE_CENTER = 90;
-  const int RIGHT_ANKLE_CENTER = 85;
+  const int RIGHT_ANKLE_CENTER = 90;
   const int HEAD_CENTER = 90;
   const int NECK_CENTER = 90;
   const int LEFT_ARM_CENTER = 90;

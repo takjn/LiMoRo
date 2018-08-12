@@ -14,7 +14,7 @@ Robot::Robot(PinName sonar, PinName head, PinName neck, PinName leftArm, PinName
     servoHead.attach(head);
     servoNeck.attach(neck);
     servoLeftArm.attach(leftArm);
-    servoLeftArm.attach(rightArm);
+    servoRightArm.attach(rightArm);
     servoLeftHip.attach(leftHip);
     servoRightHip.attach(rightHip);
     servoLeftAnkle.attach(leftAnkle);
