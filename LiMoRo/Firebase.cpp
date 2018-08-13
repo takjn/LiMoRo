@@ -4,13 +4,13 @@
  */
 
 #include "Firebase.h"
+#include <string.h>
 
-Firebase::Firebase(NetworkInterface *wifi, char *command_url, char *photo_url, char *message_url)
+Firebase::Firebase(NetworkInterface *wifi, char *url, char *limoro_id)
 {
     _wifi = wifi;
-    _command_url = command_url;
-    _photo_url = photo_url;
-    _message_url = message_url;
+    _url = url;
+    _limoro_id = limoro_id;
 }
 
 Firebase::~Firebase()
@@ -34,7 +34,8 @@ string Firebase::get_command(void)
     string ret = "NONE";
 
     // printf("\r\n----- HTTPS GET request -----\r\n");
-    HttpsRequest *get_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_GET, _command_url);
+    string url = (std::string(_url) + "command?limoroId=" + _limoro_id);
+    HttpsRequest *get_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_GET, url.c_str());
     // get_req->set_debug(true);
 
     HttpResponse *get_res = get_req->send();
@@ -81,7 +82,8 @@ string Firebase::get_command(void)
 int Firebase::post_message(const char *message, size_t size)
 {
     // printf("\r\n----- HTTPS GET request -----\r\n");
-    HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, _message_url);
+    string url = (std::string(_url) + "message?limoroId=" + _limoro_id);
+    HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, url.c_str());
     // post_req->set_debug(true);
     post_req->set_header("Content-Type", "text/html");
 
@@ -101,7 +103,8 @@ int Firebase::post_message(const char *message, size_t size)
 int Firebase::post_photo(void *body, size_t size)
 {
     // printf("\r\n----- HTTPS GET request -----\r\n");
-    HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, _photo_url);
+    string url = (std::string(_url) + "photo?limoroId=" + _limoro_id);
+    HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, url.c_str());
     // post_req->set_debug(true);
     post_req->set_header("Content-Type", "image/jpeg");
 

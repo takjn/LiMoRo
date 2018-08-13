@@ -71,7 +71,7 @@ const char SSL_CA_PEM[] = "-----BEGIN CERTIFICATE-----\n"
 class Firebase
 {
   public:
-    Firebase(NetworkInterface *wifi, char *command_url, char *photo_url, char *message_url);
+    Firebase(NetworkInterface *wifi, char *url, char *limoro_id);
     ~Firebase();
 
     string get_command(void);
@@ -80,9 +80,8 @@ class Firebase
 
   private:
     NetworkInterface *_wifi;
-    char *_command_url;
-    char *_photo_url;
-    char *_message_url;
+    char *_url;
+    char *_limoro_id;
 
     string _previous_command = ""; // 前回のコマンド
 

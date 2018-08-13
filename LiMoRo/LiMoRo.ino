@@ -1,9 +1,8 @@
-// #define ENABLE_CLOUD_FUNCTION
+#define ENABLE_CLOUD_FUNCTION
+#define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
 #define WIFI_PW "yyyy"
-#define SERVER_URL_COMMAND "https://example.com/command"
-#define SERVER_URL_PHOTO "https://example.com/photo"
-#define SERVER_URL_MESSAGE "https://example.com/message"
+#define SERVER_URL "https://example.com/"
 
 #include <Arduino.h>
 #include <Camera.h>
@@ -20,7 +19,7 @@ static EasyPlayback audio_player;
 #include "Firebase.h"
 
 ESP32Interface wifi;
-Firebase firebase(&wifi, SERVER_URL_COMMAND, SERVER_URL_PHOTO, SERVER_URL_MESSAGE);
+Firebase firebase(&wifi, SERVER_URL, LIMORO_ID);
 #endif
 
 // Camera & storage
@@ -70,7 +69,7 @@ void setup()
     Serial.println("done");
     Serial.println("Push UB0 to take a photo.");
 
-    delay(5000);
+    // delay(5000);
     // while (true) {
     //     body.demoWalk();
     // }
@@ -102,7 +101,7 @@ int receive_ir()
     int ret = 0;
 
     // 赤外線リモコン信号の受信
-    printf("IR signal waiting..\r\n");
+    // printf("IR signal waiting..\r\n");
 
     ret = ir.receive(ir_data, sizeof(ir_data) / sizeof(ir_data[0]));
     if (ret > 0)
