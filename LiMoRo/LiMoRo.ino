@@ -1,4 +1,4 @@
-#define ENABLE_CLOUD_FUNCTION
+// #define ENABLE_CLOUD_FUNCTION
 #define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
 #define WIFI_PW "yyyy"
@@ -6,6 +6,7 @@
 
 #include <Arduino.h>
 #include <Camera.h>
+#include <LCD.h>
 #include <SdUsbConnect.h>
 #include "Robot.h"
 #include "SimpleIR.h"
@@ -23,7 +24,11 @@ Firebase firebase(&wifi, SERVER_URL, LIMORO_ID);
 #endif
 
 // Camera & storage
-Camera camera(480, 272);
+#define IMAGE_HW 480
+#define IMAGE_VW 272
+Camera camera(IMAGE_HW, IMAGE_VW);
+LCD lcd(IMAGE_HW, IMAGE_VW);
+bool lcd_on = true;
 SdUsbConnect storage("storage");
 
 // IR remote control
@@ -63,7 +68,8 @@ void setup()
 
     // Camera
     camera.begin();
-    delay(100);
+    lcd.begin(camera.getImageAdr(), camera.getWidth(), camera.getHeight());
+    lcd.clear();
 
     // SD & USB
     Serial.print("Finding strage..");
@@ -186,5 +192,20 @@ void loop()
         while (digitalRead(USER_BUTTON0) == LOW)
             ;
         digitalWrite(LED_GREEN, LOW);
+    }
+
+    if (digitalRead(USER_BUTTON1) == LOW)
+    {
+        lcd_on = !lcd_on;
+        if (lcd_on)
+        {
+            lcd.restart();
+        }
+        else
+        {
+            lcd.stop();
+        }
+        while (digitalRead(USER_BUTTON1) == LOW)
+            ;
     }
 }
