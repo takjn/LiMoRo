@@ -33,9 +33,10 @@ string Firebase::get_command(void)
 {
     string ret = "NONE";
 
-    // printf("\r\n----- HTTPS GET request -----\r\n");
     string url = (std::string(_url) + "command?limoroId=" + _limoro_id);
-    HttpsRequest *get_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_GET, url.c_str());
+    // HttpsRequest *get_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_GET, url.c_str());
+    HttpRequest *get_req = new HttpRequest(_wifi, HTTP_GET, url.c_str());
+
     // get_req->set_debug(true);
 
     HttpResponse *get_res = get_req->send();
@@ -85,9 +86,10 @@ string Firebase::get_command(void)
 
 int Firebase::post_message(const char *message, size_t size)
 {
-    // printf("\r\n----- HTTPS GET request -----\r\n");
     string url = (std::string(_url) + "message?limoroId=" + _limoro_id);
-    HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, url.c_str());
+    // HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, url.c_str());
+    HttpRequest *post_req = new HttpRequest(_wifi, HTTP_POST, url.c_str());
+
     // post_req->set_debug(true);
     post_req->set_header("Content-Type", "text/html");
 
@@ -106,9 +108,10 @@ int Firebase::post_message(const char *message, size_t size)
 
 int Firebase::post_photo(void *body, size_t size)
 {
-    // printf("\r\n----- HTTPS GET request -----\r\n");
     string url = (std::string(_url) + "photo?limoroId=" + _limoro_id);
-    HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, url.c_str());
+    // HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, url.c_str());
+    HttpRequest *post_req = new HttpRequest(_wifi, HTTP_POST, url.c_str());
+
     // post_req->set_debug(true);
     post_req->set_header("Content-Type", "image/jpeg");
 

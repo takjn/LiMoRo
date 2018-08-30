@@ -8,6 +8,7 @@
 
 #include <mbed.h>
 #include "https_request.h"
+#include "http_request.h"
 
 /* List of trusted root CA certificates
 * This is the root CA for Google from GeoTrustGlobalCA and the CA for *.azurewebsites.net from Microsoft Corporation

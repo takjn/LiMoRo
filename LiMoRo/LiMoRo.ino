@@ -1,3 +1,4 @@
+// #define ENABLE_LCD
 // #define ENABLE_CLOUD_FUNCTION
 #define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
@@ -64,12 +65,14 @@ void setup()
     audio_player.add_decoder<EasyDec_WavCnv2ch>(".WAV");
 
     // volume control
-    audio_player.outputVolume(1.0); // Volume control (min:0.0 max:1.0)
+    audio_player.outputVolume(0.5); // Volume control (min:0.0 max:1.0)
 
     // Camera
     camera.begin();
+#ifdef ENABLE_LCD
     lcd.begin(camera.getImageAdr(), camera.getWidth(), camera.getHeight());
     lcd.clear();
+#endif
 
     // SD & USB
     Serial.print("Finding strage..");
@@ -194,6 +197,7 @@ void loop()
         digitalWrite(LED_GREEN, LOW);
     }
 
+#ifdef ENABLE_LCD
     if (digitalRead(USER_BUTTON1) == LOW)
     {
         lcd_on = !lcd_on;
@@ -208,4 +212,5 @@ void loop()
         while (digitalRead(USER_BUTTON1) == LOW)
             ;
     }
+#endif
 }
