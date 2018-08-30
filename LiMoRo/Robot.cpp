@@ -422,15 +422,12 @@ void Robot::ping()
 
 void Robot::demoWalk()
 {
-    while (true)
-    {
-        ping();
-        walkForwards1();
-        ping();
-        walkForwards2();
-        ping();
-        walkForwards3();
-        ping();
-        walkForwards4();
-    }
+    ping();
+    walkForwards1();
+    ping();
+    walkForwards2();
+    ping();
+    walkForwards3();
+    ping();
+    walkForwards4();
 }

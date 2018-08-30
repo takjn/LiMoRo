@@ -29,9 +29,9 @@ public:
 
 private:
   const int STEP_DELAY = 200; //  small delay inbetween step moves, adjust to slow down walk
-  const int ANGLE_DELAY = 10; //  small dealy to slow down servo speed
+  const int ANGLE_DELAY = 20; //  small dealy to slow down servo speed
 
-  const int MAX_ANKLE_ANGLE = 23;
+  const int MAX_ANKLE_ANGLE = 7;
   const int MAX_HIP_ANGLE = 25;
 
   //  Enter actual servo alingment values here

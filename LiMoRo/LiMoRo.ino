@@ -80,10 +80,19 @@ void setup()
     Serial.println("done");
     Serial.println("Push UB0 to take a photo.");
 
-    // delay(5000);
-    // while (true) {
-    //     body.demoWalk();
-    // }
+    delay(1000);
+    for (int i = 0; i < 5; i++)
+    {
+        body.walkForwards1();
+        body.walkForwards2();
+        body.walkForwards3();
+        body.walkForwards4();
+    }
+
+    while (true)
+    {
+        body.stop();
+    }
 }
 
 uint32_t last_millis = 0;
