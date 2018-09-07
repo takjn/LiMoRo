@@ -1,5 +1,5 @@
 // #define ENABLE_LCD
-// #define ENABLE_CLOUD_FUNCTION
+#define ENABLE_CLOUD_FUNCTION
 #define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
 #define WIFI_PW "yyyy"
@@ -80,19 +80,18 @@ void setup()
     Serial.println("done");
     Serial.println("Push UB0 to take a photo.");
 
-    delay(1000);
-    for (int i = 0; i < 5; i++)
-    {
-        body.walkForwards1();
-        body.walkForwards2();
-        body.walkForwards3();
-        body.walkForwards4();
-    }
-
-    while (true)
-    {
-        body.stop();
-    }
+    // delay(1000);
+    // for (int i = 0; i < 5; i++)
+    // {
+    //     body.walkForwards1();
+    //     body.walkForwards2();
+    //     body.walkForwards3();
+    //     body.walkForwards4();
+    // }
+    // while (true)
+    // {
+    //     body.stop();
+    // }
 }
 
 uint32_t last_millis = 0;
@@ -191,6 +190,10 @@ void loop()
 
     //  IR remote control
     int ir_length = receive_ir();
+    if (ir_length > 50) {
+        const char message[] = "remocon";
+        firebase.post_last_action(message, strlen(message));
+    }
 
     //  Camera
     if (digitalRead(USER_BUTTON0) == LOW)

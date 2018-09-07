@@ -78,6 +78,7 @@ class Firebase
     string get_command(void);
     int post_photo(void *body, size_t size);
     int post_message(const char *message, size_t size);
+    int post_last_action(const char *message, size_t size);
 
   private:
     NetworkInterface *_wifi;

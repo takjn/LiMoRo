@@ -106,6 +106,29 @@ int Firebase::post_message(const char *message, size_t size)
     return 0;
 }
 
+int Firebase::post_last_action(const char *message, size_t size)
+{
+    string url = (std::string(_url) + "lastAction?limoroId=" + _limoro_id);
+    // HttpsRequest *post_req = new HttpsRequest(_wifi, SSL_CA_PEM, HTTP_POST, url.c_str());
+    HttpRequest *post_req = new HttpRequest(_wifi, HTTP_POST, url.c_str());
+
+    // post_req->set_debug(true);
+    post_req->set_header("Content-Type", "text/html");
+
+    HttpResponse *post_res = post_req->send(message, size);
+
+    if (!post_res)
+    {
+        printf("HttpRequest failed (error code %d)\n", post_req->get_error());
+        return 1;
+    }
+
+    delete post_req;
+
+    return 0;
+}
+
+
 int Firebase::post_photo(void *body, size_t size)
 {
     string url = (std::string(_url) + "photo?limoroId=" + _limoro_id);
