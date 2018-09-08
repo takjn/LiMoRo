@@ -3,7 +3,7 @@
 #define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
 #define WIFI_PW "yyyy"
-#define SERVER_URL "https://example.com/"
+#define SERVER_URL "http://example.com/"
 
 #include <Arduino.h>
 #include <Camera.h>
@@ -15,12 +15,20 @@
 #include "EasyDec_WavCnv2ch.h"
 static EasyPlayback audio_player;
 
+#include <Wire.h>
+#include <BD1020.h>
+#include <RPR-0521RS.h>
+PinName tempout_pin = A0;
+BD1020 bd1020;
+RPR0521RS rpr0521rs;
+
 #ifdef ENABLE_CLOUD_FUNCTION
 #include <ESP32Interface.h>
 #include "WiFiUtility.h"
 #include "Firebase.h"
 
 ESP32Interface wifi;
+RTC rtc;
 Firebase firebase(&wifi, SERVER_URL, LIMORO_ID);
 #endif
 
@@ -42,6 +50,11 @@ SimpleIR ir(D1, D0);
 
 // Body
 Robot body(A0, D4, D5, D6, D7, D8, D9, D10, D11);
+#define LED_HEART 13
+
+// timer
+uint32_t last_millis = 0;
+int last_minute = -1;
 
 void setup()
 {
@@ -51,6 +64,7 @@ void setup()
     pinMode(LED_RED, OUTPUT);
     pinMode(LED_ORANGE, OUTPUT);
     pinMode(LED_GREEN, OUTPUT);
+    pinMode(LED_HEART, OUTPUT);
     pinMode(USER_BUTTON0, INPUT);
     pinMode(USER_BUTTON1, INPUT);
 
@@ -74,6 +88,11 @@ void setup()
     lcd.clear();
 #endif
 
+    // Sensors
+    Wire.begin();
+    rpr0521rs.init();
+    bd1020.init(tempout_pin);
+
     // SD & USB
     Serial.print("Finding strage..");
     storage.wait_connect();
@@ -93,8 +112,6 @@ void setup()
     //     body.stop();
     // }
 }
-
-uint32_t last_millis = 0;
 
 void take_photo()
 {
@@ -186,11 +203,34 @@ void loop()
 
         last_millis = millis();
     }
+
+    int year, mon, day, hour, min, sec, week;
+    rtc.getDateTime(year, mon, day, hour, min, sec, week);
+    if (min != last_minute)
+    {
+        // temperature
+        float temp;
+        bd1020.get_val(&temp);
+
+        // lx
+        byte return_code;
+        unsigned short ps_val;
+        float als_val;
+        return_code = rpr0521rs.get_psalsval(&ps_val, &als_val);
+        if (return_code == 0)
+        {
+            firebase.post_sensor(temp, als_val);
+        }
+
+        last_minute = min;
+    }
+
 #endif
 
     //  IR remote control
     int ir_length = receive_ir();
-    if (ir_length > 50) {
+    if (ir_length > 50)
+    {
         const char message[] = "remocon";
         firebase.post_last_action(message, strlen(message));
     }

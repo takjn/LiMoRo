@@ -5,7 +5,7 @@
 #include <RTC.h>
 
 extern ESP32Interface wifi;
-RTC rtc;
+extern RTC rtc;
 
 void setDateTimeFromNTP()
 {

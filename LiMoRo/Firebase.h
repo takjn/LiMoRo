@@ -79,6 +79,7 @@ class Firebase
     int post_photo(void *body, size_t size);
     int post_message(const char *message, size_t size);
     int post_last_action(const char *message, size_t size);
+    int post_sensor(float temperature, float lx);
 
   private:
     NetworkInterface *_wifi;

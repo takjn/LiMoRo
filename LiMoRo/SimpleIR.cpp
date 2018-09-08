@@ -31,7 +31,7 @@ int SimpleIR::receive(unsigned int ir_data[], size_t data_size)
     start_at = timer.read_us();
     while (stat = ir_in)
     {
-        if (timer.read_us() - start_at > 1000000)
+        if (timer.read_us() - start_at > 1000)
         {
             return -1;
         }
