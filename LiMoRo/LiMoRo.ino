@@ -1,5 +1,5 @@
 // #define ENABLE_LCD
-#define ENABLE_CLOUD_FUNCTION
+// #define ENABLE_CLOUD_FUNCTION
 #define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
 #define WIFI_PW "yyyy"
@@ -238,11 +238,13 @@ void loop()
 
     //  IR remote control
     int ir_length = receive_ir();
+#ifdef ENABLE_CLOUD_FUNCTION
     if (ir_length > 50)
     {
         const char message[] = "remocon";
         firebase.post_last_action(message, strlen(message));
     }
+#endif
 
     //  Camera
     if (digitalRead(USER_BUTTON0) == LOW)
