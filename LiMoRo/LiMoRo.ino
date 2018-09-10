@@ -51,6 +51,7 @@ SimpleIR ir(D1, D0);
 // Body
 Robot body(A0, D4, D5, D6, D7, D8, D9, D10, D11);
 #define LED_HEART 13
+uint8_t led_heart_level = 0;
 
 // timer
 uint32_t last_millis = 0;
@@ -202,6 +203,7 @@ void loop()
         }
 
         last_millis = millis();
+        led_heart_level = 255;
     }
 
     int year, mon, day, hour, min, sec, week;
@@ -226,6 +228,13 @@ void loop()
     }
 
 #endif
+
+    // Heart beat
+    // if (led_heart_level > 0)
+    // {
+    //     led_heart_level --;
+    // }
+    // analogWrite(LED_HEART, led_heart_level);
 
     //  IR remote control
     int ir_length = receive_ir();
