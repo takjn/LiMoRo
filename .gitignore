@@ -31,5 +31,6 @@
 *.out
 *.app
 
+src/gr_build/*
 gr_build/*
 .vscode
