@@ -69,8 +69,7 @@ const char SSL_CA_PEM[] = "-----BEGIN CERTIFICATE-----\n"
                           "ujxS43/jQPQMQSBmhxjaMmng9tyPKPK9\n"
                           "-----END CERTIFICATE-----\n";
 
-class Firebase
-{
+class Firebase {
   public:
     Firebase(NetworkInterface *wifi, char *url, char *limoro_id);
     ~Firebase();

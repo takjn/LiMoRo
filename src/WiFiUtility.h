@@ -7,44 +7,36 @@
 extern ESP32Interface wifi;
 extern RTC rtc;
 
-void setDateTimeFromNTP()
-{
+void setDateTimeFromNTP() {
     printf("Accessing NTP..");
     NTPClient ntp(&wifi);
     time_t tstamp = ntp.get_timestamp();
-    if (tstamp < 0)
-    {
+    if (tstamp < 0) {
         printf("Cannot get time from NTP.");
         rtc.setDateTime(2018, 4, 19, 16, 40, 0);
-    }
-    else
-    {
+    } else {
         printf("done\r\n");
         struct tm tim = *localtime(&tstamp);
         rtc.setDateTime(tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday, tim.tm_hour, tim.tm_min, tim.tm_sec);
     }
 }
 
-void panic()
-{
+void panic() {
     // 異常終了した場合、LED1を高速で点滅する
     char led = 1;
-    while (1)
-    {
+    while (1) {
         digitalWrite(LED_RED, led);
         led = (1 - led);
         delay(100);
     }
 }
 
-void wifiSetup()
-{
+void wifiSetup() {
     // WiFi
     rtc.begin();
     printf("Connecting...\r\n");
     int ret = wifi.connect(WIFI_SSID, WIFI_PW, NSAPI_SECURITY_WPA_WPA2);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         printf("Connection error\r\n");
         panic();
     }
