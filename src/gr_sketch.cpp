@@ -24,8 +24,8 @@ RPR0521RS rpr0521rs;
 
 #ifdef ENABLE_CLOUD_FUNCTION
 #include <ESP32Interface.h>
-#include "Firebase.h"
-#include "WiFiUtility.h"
+#include <Firebase.h>
+#include <WiFiUtility.h>
 
 ESP32Interface wifi;
 RTC rtc;
@@ -107,9 +107,10 @@ void setup() {
     //     body.walkForwards3();
     //     body.walkForwards4();
     // }
+    // body.mode = 1;
     // while (true)
     // {
-    //     body.stop();
+    //     body.loop();
     // }
 }
 
@@ -145,7 +146,17 @@ int receive_ir() {
     return ret;
 }
 
+void blink() {
+    for (int i = 0; i < 2; i++) {
+        digitalWrite(LED_HEART, HIGH);
+        delay(50);
+        digitalWrite(LED_HEART, LOW);
+        delay(50);
+    }
+}
+
 void loop() {
+    body.loop();
 
 #ifdef ENABLE_CLOUD_FUNCTION
     //  Check command
@@ -155,6 +166,7 @@ void loop() {
             delay(5000);
         } else if (ret == "PHOTO") {
             digitalWrite(LED_GREEN, HIGH);
+            blink();
             take_photo();
             size_t size = camera.createJpeg();
             int ret = firebase.post_photo(camera.getJpegAdr(), size);
@@ -167,14 +179,17 @@ void loop() {
             }
             digitalWrite(LED_GREEN, LOW);
         } else if (ret == "TV") {
+            blink();
             ir.transmit(ir_data_tv, sizeof(ir_data_tv) / sizeof(ir_data_tv[0]));
             // const char message[] = "テレビをつけました";
             // firebase.post_message(message, strlen(message));
         } else if (ret == "AIRCON") {
+            blink();
             ir.transmit(ir_data_aircon, sizeof(ir_data_aircon) / sizeof(ir_data_aircon[0]));
             // const char message[] = "エアコンをつけました";
             // firebase.post_message(message, strlen(message));
         } else if (ret == "LIGHT") {
+            blink();
             ir.transmit(ir_data_light, sizeof(ir_data_light) / sizeof(ir_data_light[0]));
             // const char message[] = "ライトをつけました";
             // firebase.post_message(message, strlen(message));
@@ -214,12 +229,13 @@ void loop() {
 
     //  IR remote control
     int ir_length = receive_ir();
-#ifdef ENABLE_CLOUD_FUNCTION
     if (ir_length > 50) {
+        blink();
+#ifdef ENABLE_CLOUD_FUNCTION
         const char message[] = "remocon";
         firebase.post_last_action(message, strlen(message));
-    }
 #endif
+    }
 
     //  Camera
     if (digitalRead(USER_BUTTON0) == LOW) {

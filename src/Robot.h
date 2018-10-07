@@ -25,6 +25,10 @@ class Robot {
     double sonar();
     void ping();
     void demoWalk();
+    void loop();
+    void swing();
+
+    int mode = 0;
 
   private:
     const int STEP_DELAY = 200; //  small delay inbetween step moves, adjust to slow down walk
@@ -39,9 +43,11 @@ class Robot {
     const int LEFT_ANKLE_CENTER = 90;
     const int RIGHT_ANKLE_CENTER = 90;
     const int HEAD_CENTER = 90;
-    const int NECK_CENTER = 90;
+    const int NECK_CENTER = 80;
     const int LEFT_ARM_CENTER = 90;
     const int RIGHT_ARM_CENTER = 90;
+
+    int motion_loop = 0;
 
     Servo servoLeftHip;
     Servo servoRightHip;
@@ -54,6 +60,9 @@ class Robot {
 
     PinName pinSonar;
 
+    int neckPosition = 0;
+    int leftArmPosition = 0;
+    int rightArmPosition = 0;
     int leftAnklePosition = 0;
     int rightAnklePosition = 0;
     int leftHipPosition = 0;
