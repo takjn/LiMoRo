@@ -27,8 +27,7 @@ class Robot {
     void demoWalk();
     void loop();
     void swing();
-
-    int mode = 0;
+    void startMotion(int, int);
 
   private:
     const int STEP_DELAY = 200; //  small delay inbetween step moves, adjust to slow down walk
@@ -47,7 +46,10 @@ class Robot {
     const int LEFT_ARM_CENTER = 90;
     const int RIGHT_ARM_CENTER = 90;
 
+    unsigned long start_motion_millis = 0;
+    int motion_mode = 0;
     int motion_loop = 0;
+    int motion_timeout = 0;
 
     Servo servoLeftHip;
     Servo servoRightHip;

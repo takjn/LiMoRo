@@ -27,8 +27,8 @@ Robot::~Robot() {
 }
 
 void Robot::stop() {
-    mode = 0;
-    
+    motion_mode = 0;
+
     servoHead.write(NECK_CENTER);
     servoNeck.write(NECK_CENTER);
     servoLeftArm.write(LEFT_ARM_CENTER);
@@ -389,7 +389,13 @@ void Robot::demoWalk() {
 }
 
 void Robot::loop() {
-    if (mode == 1) {
+    if (motion_timeout > 0) {
+        if (start_motion_millis + motion_timeout < millis()) {
+            stop();
+        }
+    }
+
+    if (motion_mode == 1) {
         swing();
         motion_loop++;
     }
@@ -415,4 +421,10 @@ void Robot::swing() {
     servoRightArm.write(RIGHT_ARM_CENTER + rightArmPosition);
     delay(ANGLE_DELAY);
     // printf("%d: %d, %d\r\n", motion_loop, leftArmPosition, rightArmPosition);
+}
+
+void Robot::startMotion(int mode, int timeout) {
+    motion_mode = mode;
+    motion_timeout = timeout;
+    start_motion_millis = millis();
 }

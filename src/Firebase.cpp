@@ -57,6 +57,8 @@ string Firebase::get_command(void) {
             ret = "AIRCON";
         } else if (command.find("LIGHT") != string::npos) {
             ret = "LIGHT";
+        } else if (command.find("SWING") != string::npos) {
+            ret = "SWING";
         }
 
         _previous_command = command;

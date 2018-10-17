@@ -193,6 +193,9 @@ void loop() {
             ir.transmit(ir_data_light, sizeof(ir_data_light) / sizeof(ir_data_light[0]));
             // const char message[] = "ライトをつけました";
             // firebase.post_message(message, strlen(message));
+        } else if (ret == "SWING") {
+            blink();
+            body.startMotion(1, 5000);
         }
 
         last_millis = millis();

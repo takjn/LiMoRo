@@ -56,7 +56,7 @@ int SimpleIR::receive(unsigned int ir_data[], size_t data_size) {
 void SimpleIR::transmit(unsigned int *ir_data, size_t data_size) {
     unsigned int i;
 
-    ir_out.period_us(26.5); // 38KHz = 1/38000[s] = 26.315 [us]
+    ir_out.period_us(26.3); // 38KHz = 1/38000[s] = 26.315 [us]
 
     for (i = 0; i < data_size; i++) {
         ir_out.write(0.5 * (1 - (i % 2)));
