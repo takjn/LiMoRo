@@ -338,6 +338,9 @@ Move8:
 }
 
 double Robot::sonar() {
+    // TODO
+    return 100;
+
     double ans;
     int i;
     ans = 0;
@@ -377,7 +380,7 @@ void Robot::ping() {
     }
 }
 
-void Robot::demoWalk() {
+void Robot::walkForwards() {
     ping();
     walkForwards1();
     ping();
@@ -427,4 +430,18 @@ void Robot::startMotion(int mode, int timeout) {
     motion_mode = mode;
     motion_timeout = timeout;
     start_motion_millis = millis();
+}
+
+void Robot::look_left() {
+    if (neckPosition < 20) {
+        neckPosition++;
+    }
+    servoNeck.write(NECK_CENTER + neckPosition);
+}
+
+void Robot::look_right() {
+    if (neckPosition > -20) {
+        neckPosition--;
+    }
+    servoNeck.write(NECK_CENTER + neckPosition);
 }

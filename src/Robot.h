@@ -15,19 +15,17 @@ class Robot {
     ~Robot();
 
     void stop();
-    void walkForwards1();
-    void walkForwards2();
-    void walkForwards3();
-    void walkForwards4();
-    void walkBackwards();
     void turnRight();
     void turnLeft();
     double sonar();
     void ping();
-    void demoWalk();
+    void walkForwards();
+    void walkBackwards();
     void loop();
     void swing();
     void startMotion(int, int);
+    void look_right();
+    void look_left();
 
   private:
     const int STEP_DELAY = 200; //  small delay inbetween step moves, adjust to slow down walk
@@ -69,5 +67,10 @@ class Robot {
     int rightAnklePosition = 0;
     int leftHipPosition = 0;
     int rightHipPosition = 0;
+
+    void walkForwards1();
+    void walkForwards2();
+    void walkForwards3();
+    void walkForwards4();
 };
 #endif

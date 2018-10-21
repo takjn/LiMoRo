@@ -213,6 +213,15 @@ bool detect_face() {
             printf("Detected a face X:%d Y:%d W:%d H:%d\n", face_roi.x, face_roi.y, face_roi.width, face_roi.height);
             digitalWrite(PIN_LED_GREEN, LOW);
             ret = true;
+
+            // // look a face
+            // if (face_roi.x > IMAGE_HW / 2) {
+            //     body.look_left();
+            // } else if (face_roi.x < IMAGE_HW / 2) {
+            //     body.lool_right();
+            // }
+
+            // TODO:take a photo
         }
     } else {
         // No face is detected, set an invalid rectangle
@@ -269,6 +278,21 @@ void loop() {
         } else if (ret == "SWING") {
             blink();
             body.startMotion(1, 5000);
+        } else if (ret == "STOP") {
+            blink();
+            body.stop();
+        } else if (ret == "WALK_FORWARD") {
+            blink();
+            body.walkForwards();
+        } else if (ret == "WALK_BACKWARD") {
+            blink();
+            body.walkBackwards();
+        } else if (ret == "TURN_LEFT") {
+            blink();
+            body.turnLeft();
+        } else if (ret == "TURN_RIGHT") {
+            blink();
+            body.turnRight();
         }
 
         last_millis = millis();

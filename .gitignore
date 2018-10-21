@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+*.bin
 
 src/gr_build/*
 gr_build/*

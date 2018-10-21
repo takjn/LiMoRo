@@ -59,6 +59,16 @@ string Firebase::get_command(void) {
             ret = "LIGHT";
         } else if (command.find("SWING") != string::npos) {
             ret = "SWING";
+        } else if (command.find("WALK_FORWARD") != string::npos) {
+            ret = "WALK_FORWARD";
+        } else if (command.find("WALK_BACKWARD") != string::npos) {
+            ret = "WALK_BACKWARD";
+        } else if (command.find("TURN_LEFT") != string::npos) {
+            ret = "TURN_LEFT";
+        } else if (command.find("TURN_RIGHT") != string::npos) {
+            ret = "TURN_RIGHT";
+        } else if (command.find("STOP") != string::npos) {
+            ret = "STOP";
         }
 
         _previous_command = command;
