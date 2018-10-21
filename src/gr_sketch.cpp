@@ -1,4 +1,5 @@
 // #define ENABLE_LCD
+#define ENABLE_DETECT_FACE
 #define ENABLE_CLOUD_FUNCTION
 #define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
@@ -33,12 +34,24 @@ Firebase firebase(&wifi, SERVER_URL, LIMORO_ID);
 #endif
 
 // Camera & storage
-#define IMAGE_HW 480
-#define IMAGE_VW 272
-Camera camera(IMAGE_HW, IMAGE_VW);
-LCD lcd(IMAGE_HW, IMAGE_VW);
+#define IMAGE_HW 320
+#define IMAGE_VW 240
+
+#ifdef ENABLE_DETECT_FACE
+/* FACE DETECTOR Parameters */
+#include <opencv.hpp>
+using namespace cv;
+#define DETECTOR_SCALE_FACTOR (2)
+#define DETECTOR_MIN_NEIGHBOR (4)
+#define DETECTOR_MIN_SIZE (30)
+#define FACE_DETECTOR_MODEL "/storage/lbpcascade_frontalface.xml"
+static CascadeClassifier detector_classifier;
+#endif
+
+static Camera camera(IMAGE_HW, IMAGE_VW);
+static SdUsbConnect storage("storage");
+static LCD lcd(IMAGE_HW, IMAGE_VW);
 bool lcd_on = true;
-SdUsbConnect storage("storage");
 
 // IR remote control
 unsigned int ir_data[1024];
@@ -99,6 +112,16 @@ void setup() {
     Serial.println("done");
     Serial.println("Push UB0 to take a photo.");
 
+#ifdef ENABLE_DETECT_FACE
+    // Load the cascade classifier file
+    detector_classifier.load(FACE_DETECTOR_MODEL);
+    if (detector_classifier.empty()) {
+        digitalWrite(PIN_LED_RED, HIGH); // Error
+        CV_Assert(0);
+        mbed_die();
+    }
+#endif
+
     // delay(1000);
     // for (int i = 0; i < 5; i++)
     // {
@@ -127,6 +150,11 @@ void take_photo() {
         delay(1);
     }
     Serial.println("done to take a photo");
+
+#ifdef ENABLE_CLOUD_FUNCTION
+    size_t size = camera.createJpeg();
+    firebase.post_photo(camera.getJpegAdr(), size);
+#endif
 }
 
 int receive_ir() {
@@ -155,7 +183,52 @@ void blink() {
     }
 }
 
+bool detect_face() {
+    bool ret = false;
+
+    Mat img_raw(IMAGE_VW, IMAGE_HW, CV_8UC2, camera.getImageAdr());
+
+    Mat src;
+    cvtColor(img_raw, src, COLOR_YUV2GRAY_YUYV); //covert from YUV to GRAY
+
+    // Detect a face in the frame
+    Rect face_roi;
+    if (detector_classifier.empty()) {
+        digitalWrite(PIN_LED_RED, HIGH); // Error
+    }
+
+    // Perform detected the biggest face
+    std::vector<Rect> rect_faces;
+    detector_classifier.detectMultiScale(src, rect_faces,
+                                         DETECTOR_SCALE_FACTOR,
+                                         DETECTOR_MIN_NEIGHBOR,
+                                         CASCADE_FIND_BIGGEST_OBJECT,
+                                         Size(DETECTOR_MIN_SIZE, DETECTOR_MIN_SIZE));
+
+    if (rect_faces.size() > 0) {
+        // A face is detected
+        face_roi = rect_faces[0];
+        if (face_roi.width > 0 && face_roi.height > 0) {
+            digitalWrite(PIN_LED_GREEN, HIGH);
+            printf("Detected a face X:%d Y:%d W:%d H:%d\n", face_roi.x, face_roi.y, face_roi.width, face_roi.height);
+            digitalWrite(PIN_LED_GREEN, LOW);
+            ret = true;
+        }
+    } else {
+        // No face is detected, set an invalid rectangle
+        face_roi.x = -1;
+        face_roi.y = -1;
+        face_roi.width = -1;
+        face_roi.height = -1;
+    }
+
+    return ret;
+}
+
 void loop() {
+    int year, mon, day, hour, min, sec, week;
+    rtc.getDateTime(year, mon, day, hour, min, sec, week);
+
     body.loop();
 
 #ifdef ENABLE_CLOUD_FUNCTION
@@ -202,8 +275,6 @@ void loop() {
         led_heart_level = 255;
     }
 
-    int year, mon, day, hour, min, sec, week;
-    rtc.getDateTime(year, mon, day, hour, min, sec, week);
     if (min != last_minute) {
         // temperature
         float temp;
@@ -244,10 +315,6 @@ void loop() {
     if (digitalRead(USER_BUTTON0) == LOW) {
         digitalWrite(LED_GREEN, HIGH);
         take_photo();
-#ifdef ENABLE_CLOUD_FUNCTION
-        size_t size = camera.createJpeg();
-        firebase.post_photo(camera.getJpegAdr(), size);
-#endif
         while (digitalRead(USER_BUTTON0) == LOW)
             ;
         digitalWrite(LED_GREEN, LOW);
@@ -264,5 +331,9 @@ void loop() {
         while (digitalRead(USER_BUTTON1) == LOW)
             ;
     }
+#endif
+
+#ifdef ENABLE_DETECT_FACE
+    detect_face();
 #endif
 }
