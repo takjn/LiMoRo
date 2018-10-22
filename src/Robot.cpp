@@ -433,14 +433,14 @@ void Robot::startMotion(int mode, int timeout) {
 }
 
 void Robot::look_left() {
-    if (neckPosition < 20) {
+    if (neckPosition < 25) {
         neckPosition++;
     }
     servoNeck.write(NECK_CENTER + neckPosition);
 }
 
 void Robot::look_right() {
-    if (neckPosition > -20) {
+    if (neckPosition > -25) {
         neckPosition--;
     }
     servoNeck.write(NECK_CENTER + neckPosition);

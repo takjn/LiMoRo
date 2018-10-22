@@ -1,6 +1,6 @@
 // #define ENABLE_LCD
 #define ENABLE_DETECT_FACE
-#define ENABLE_CLOUD_FUNCTION
+// #define ENABLE_CLOUD_FUNCTION
 #define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
 #define WIFI_PW "yyyy"
@@ -209,17 +209,15 @@ bool detect_face() {
         // A face is detected
         face_roi = rect_faces[0];
         if (face_roi.width > 0 && face_roi.height > 0) {
-            digitalWrite(PIN_LED_GREEN, HIGH);
-            printf("Detected a face X:%d Y:%d W:%d H:%d\n", face_roi.x, face_roi.y, face_roi.width, face_roi.height);
-            digitalWrite(PIN_LED_GREEN, LOW);
+            printf("Detected a face X:%d Y:%d W:%d H:%d\r\n", face_roi.x, face_roi.y, face_roi.width, face_roi.height);
             ret = true;
 
-            // // look a face
-            // if (face_roi.x > IMAGE_HW / 2) {
-            //     body.look_left();
-            // } else if (face_roi.x < IMAGE_HW / 2) {
-            //     body.lool_right();
-            // }
+            // look a face
+            if ((face_roi.x + face_roi.width / 2) > IMAGE_HW / 2 + 10) {
+                body.look_right();
+            } else if ((face_roi.x + face_roi.width / 2) < IMAGE_HW / 2 - 10) {
+                body.look_left();
+            }
 
             // TODO:take a photo
         }
@@ -235,12 +233,13 @@ bool detect_face() {
 }
 
 void loop() {
-    int year, mon, day, hour, min, sec, week;
-    rtc.getDateTime(year, mon, day, hour, min, sec, week);
 
     body.loop();
 
 #ifdef ENABLE_CLOUD_FUNCTION
+    int year, mon, day, hour, min, sec, week;
+    rtc.getDateTime(year, mon, day, hour, min, sec, week);
+
     //  Check command
     if (millis() - last_millis > 1000) {
         string ret = firebase.get_command();
