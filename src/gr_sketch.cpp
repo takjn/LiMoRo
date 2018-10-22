@@ -1,6 +1,6 @@
 // #define ENABLE_LCD
 #define ENABLE_DETECT_FACE
-// #define ENABLE_CLOUD_FUNCTION
+#define ENABLE_CLOUD_FUNCTION
 #define LIMORO_ID "aaaa"
 #define WIFI_SSID "xxxx"
 #define WIFI_PW "yyyy"
@@ -46,6 +46,7 @@ using namespace cv;
 #define DETECTOR_MIN_SIZE (30)
 #define FACE_DETECTOR_MODEL "/storage/lbpcascade_frontalface.xml"
 static CascadeClassifier detector_classifier;
+static bool face_detected = false;
 #endif
 
 static Camera camera(IMAGE_HW, IMAGE_VW);
@@ -121,20 +122,6 @@ void setup() {
         mbed_die();
     }
 #endif
-
-    // delay(1000);
-    // for (int i = 0; i < 5; i++)
-    // {
-    //     body.walkForwards1();
-    //     body.walkForwards2();
-    //     body.walkForwards3();
-    //     body.walkForwards4();
-    // }
-    // body.mode = 1;
-    // while (true)
-    // {
-    //     body.loop();
-    // }
 }
 
 void take_photo() {
@@ -276,16 +263,18 @@ void loop() {
             // firebase.post_message(message, strlen(message));
         } else if (ret == "SWING") {
             blink();
-            body.startMotion(1, 5000);
+            body.startMotion(1, 10000);
         } else if (ret == "STOP") {
             blink();
             body.stop();
         } else if (ret == "WALK_FORWARD") {
             blink();
-            body.walkForwards();
+            body.startMotion(2, 0);
+            // body.walkForwards();
         } else if (ret == "WALK_BACKWARD") {
             blink();
-            body.walkBackwards();
+            body.startMotion(3, 0);
+            // body.walkBackwards();
         } else if (ret == "TURN_LEFT") {
             blink();
             body.turnLeft();
@@ -310,6 +299,14 @@ void loop() {
         return_code = rpr0521rs.get_psalsval(&ps_val, &als_val);
         if (return_code == 0) {
             firebase.post_sensor(temp, als_val);
+        }
+
+        // take a photo
+        if (face_detected) {
+            blink();
+            take_photo();
+            size_t size = camera.createJpeg();
+            face_detected = false;
         }
 
         last_minute = min;
@@ -357,6 +354,6 @@ void loop() {
 #endif
 
 #ifdef ENABLE_DETECT_FACE
-    detect_face();
+    face_detected = face_detected | detect_face();
 #endif
 }

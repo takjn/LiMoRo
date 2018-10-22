@@ -139,10 +139,10 @@ Move1:
     servoLeftAnkle.write(LEFT_ANKLE_CENTER + leftAnklePosition);
     servoRightAnkle.write(RIGHT_ANKLE_CENTER + rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (leftAnklePosition < 23) {
+    if (leftAnklePosition < MAX_ANKLE_ANGLE) {
         goto Move1;
     } //Left Ankle goto 23deg
-    if (rightAnklePosition < 23) {
+    if (rightAnklePosition < MAX_ANKLE_ANGLE) {
         goto Move1;
     } //Right Ankle goto 23deg
 
@@ -152,7 +152,7 @@ Move2:
     rightHipPosition = rightHipPosition + 1;
     servoRightHip.write(RIGHT_HIP_CENTER - rightHipPosition);
     delay(ANGLE_DELAY);
-    if (rightHipPosition < 30) {
+    if (rightHipPosition < MAX_HIP_ANGLE) {
         goto Move2;
     } //Right Hipe goto 25deg
 
@@ -164,10 +164,10 @@ Move3:
     servoLeftAnkle.write(LEFT_ANKLE_CENTER + leftAnklePosition);
     servoRightAnkle.write(RIGHT_ANKLE_CENTER + rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (leftAnklePosition > -23) {
+    if (leftAnklePosition > -MAX_ANKLE_ANGLE) {
         goto Move3;
     } //Left Ankle goto 23degrees
-    if (rightAnklePosition > -23) {
+    if (rightAnklePosition > -MAX_ANKLE_ANGLE) {
         goto Move3;
     } //Right Ankle goto 23degrees
 
@@ -177,7 +177,7 @@ Move4:
     leftHipPosition = leftHipPosition - 1;
     servoLeftHip.write(LEFT_HIP_CENTER + leftHipPosition);
     delay(ANGLE_DELAY);
-    if (leftHipPosition > -25) {
+    if (leftHipPosition > -MAX_HIP_ANGLE) {
         goto Move4;
     } //Left Hip goto -25deg
 
@@ -199,10 +199,10 @@ Move6:
     servoLeftAnkle.write(LEFT_ANKLE_CENTER + leftAnklePosition);
     servoRightAnkle.write(RIGHT_ANKLE_CENTER + rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (leftAnklePosition < +23) {
+    if (leftAnklePosition < +MAX_ANKLE_ANGLE) {
         goto Move6;
     } //Left Ankle goto 23degrees
-    if (rightAnklePosition < +23) {
+    if (rightAnklePosition < +MAX_ANKLE_ANGLE) {
         goto Move6;
     } //Right Ankle goto 23degrees
 
@@ -242,10 +242,10 @@ Move1:
     servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
     servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (leftAnklePosition < 23) {
+    if (leftAnklePosition < MAX_ANKLE_ANGLE) {
         goto Move1;
     } //Left Ankle goto 23deg
-    if (rightAnklePosition < 23) {
+    if (rightAnklePosition < MAX_ANKLE_ANGLE) {
         goto Move1;
     } //Right Ankle goto 23deg
 
@@ -255,7 +255,7 @@ Move2:
     leftHipPosition = leftHipPosition + 1;
     servoLeftHip.write(LEFT_HIP_CENTER + leftHipPosition);
     delay(ANGLE_DELAY);
-    if (leftHipPosition < 30) {
+    if (leftHipPosition < MAX_HIP_ANGLE) {
         goto Move2;
     }
 
@@ -267,10 +267,10 @@ Move3:
     servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
     servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (leftAnklePosition > -23) {
+    if (leftAnklePosition > -MAX_ANKLE_ANGLE) {
         goto Move3;
     } //Left Ankle goto 23degrees
-    if (rightAnklePosition > -23) {
+    if (rightAnklePosition > -MAX_ANKLE_ANGLE) {
         goto Move3;
     } //Right Ankle goto 23degrees
 
@@ -280,7 +280,7 @@ Move4:
     rightHipPosition = rightHipPosition - 1;
     servoRightHip.write(RIGHT_HIP_CENTER - rightHipPosition);
     delay(ANGLE_DELAY);
-    if (rightHipPosition > -25) {
+    if (rightHipPosition > -MAX_HIP_ANGLE) {
         goto Move4;
     }
 
@@ -302,10 +302,10 @@ Move6:
     servoLeftAnkle.write(LEFT_ANKLE_CENTER - leftAnklePosition);
     servoRightAnkle.write(RIGHT_ANKLE_CENTER - rightAnklePosition);
     delay(ANGLE_DELAY);
-    if (leftAnklePosition < +23) {
+    if (leftAnklePosition < +MAX_ANKLE_ANGLE) {
         goto Move6;
     } //Left Ankle goto 23degrees
-    if (rightAnklePosition < +23) {
+    if (rightAnklePosition < +MAX_ANKLE_ANGLE) {
         goto Move6;
     } //Right Ankle goto 23degrees
 
@@ -401,6 +401,12 @@ void Robot::loop() {
     if (motion_mode == 1) {
         swing();
         motion_loop++;
+    }
+    if (motion_mode == 2) {
+        walkForwards();
+    }
+    if (motion_mode == 3) {
+        walkBackwards();
     }
 }
 
