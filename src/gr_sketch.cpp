@@ -140,7 +140,14 @@ void take_photo() {
 
 #ifdef ENABLE_CLOUD_FUNCTION
     size_t size = camera.createJpeg();
-    firebase.post_photo(camera.getJpegAdr(), size);
+    int ret = firebase.post_photo(camera.getJpegAdr(), size);
+    if (ret == 0) {
+        // const char message[] = "写真を撮りました";
+        // firebase.post_message(message, strlen(message));
+    } else {
+        const char message[] = "通信に失敗しました";
+        firebase.post_message(message, strlen(message));
+    }
 #endif
 }
 
@@ -236,15 +243,6 @@ void loop() {
             digitalWrite(LED_GREEN, HIGH);
             blink();
             take_photo();
-            size_t size = camera.createJpeg();
-            int ret = firebase.post_photo(camera.getJpegAdr(), size);
-            if (ret == 0) {
-                // const char message[] = "写真を撮りました";
-                // firebase.post_message(message, strlen(message));
-            } else {
-                const char message[] = "通信に失敗しました";
-                firebase.post_message(message, strlen(message));
-            }
             digitalWrite(LED_GREEN, LOW);
         } else if (ret == "TV") {
             blink();
